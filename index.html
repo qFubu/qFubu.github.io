@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odpočítávání</title>
+    <style>
+        /* CSS pro pozadí a vzhled odpočítávání */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+
+            /* Responzivní pozadí */
+            background-image: url('pozadi.png'); /* Nahraď názvem svého obrázku */
+            background-size: cover; /* Přizpůsobí obrázek šířce a výšce obrazovky */
+            background-position: center; /* Vycentrování obrázku */
+            background-repeat: no-repeat; /* Bez opakování obrázku */
+            background-attachment: fixed; /* Pozadí zůstává pevné */
+        }
+
+        /* Kontejner pro odpočítávání */
+        #countdown {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5); /* Poloprůhledné pozadí pro lepší čitelnost */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* Styl pro čas a popisky */
+        .time {
+            font-size: 2em;
+        }
+        .label {
+            font-size: 0.8em;
+        }
+
+        /* Responzivní úpravy pro menší obrazovky */
+        @media (max-width: 600px) {
+            .time {
+                font-size: 1.5em; /* Zmenší text na mobilních zařízeních */
+            }
+            .label {
+                font-size: 0.7em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="countdown">
+        <div id="days" class="time">0</div>
+        <div class="label">Dnů</div>
+        <div id="hours" class="time">0</div>
+        <div class="label">Hodin</div>
+        <div id="minutes" class="time">0</div>
+        <div class="label">Minut</div>
+        <div id="seconds" class="time">0</div>
+        <div class="label">Sekund</div>
+    </div>
+
+    <script>
+        // JavaScript pro odpočítávání
+        const countdownDate = new Date("2024-11-08T19:00:00").getTime(); // Nastav svůj cílový datum a čas
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+
+            // Výpočty dnů, hodin, minut a sekund
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Zobrazení výsledků v HTML
+            document.getElementById("days").textContent = days;
+            document.getElementById("hours").textContent = hours;
+            document.getElementById("minutes").textContent = minutes;
+            document.getElementById("seconds").textContent = seconds;
+
+            // Pokud odpočítávání vypršelo
+            if (distance < 0) {
+                document.getElementById("countdown").textContent = "JSME SPOLU!";
+            }
+        }
+
+        // Aktualizace každou sekundu
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
