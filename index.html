@@ -48,6 +48,22 @@
                 font-size: 0.7em;
             }
         }
+
+        /* Styl pro tlačítko */
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -60,6 +76,12 @@
         <div class="label">Minut</div>
         <div id="seconds" class="time">0</div>
         <div class="label">Sekund</div>
+
+        <!-- Tlačítko pro přehrání hudby -->
+        <button onclick="playAudio()">▶️</button>
+
+        <!-- Audio player (skrytý) -->
+        <audio id="audioPlayer" src="song.mp3" preload="auto"></audio>
     </div>
 
     <script>
@@ -90,6 +112,16 @@
 
         // Aktualizace každou sekundu
         setInterval(updateCountdown, 1000);
+
+        // Funkce pro přehrání audia po kliknutí na tlačítko
+        function playAudio() {
+            const audio = document.getElementById("audioPlayer");
+            if (audio) {
+                audio.play().catch(error => {
+                    console.warn("Automatické přehrávání nebylo povoleno prohlížečem.", error);
+                });
+            }
+        }
     </script>
 </body>
 </html>
