@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Odpočítávání</title>
     <style>
-        /* CSS pro pozadí a vzhled odpočítávání */
         body {
             display: flex;
             align-items: center;
@@ -14,42 +13,24 @@
             margin: 0;
             font-family: Arial, sans-serif;
             color: white;
-
-            /* Responzivní pozadí */
-            background-image: url('pozadi.png'); /* Nahraď názvem svého obrázku */
-            background-size: cover; /* Přizpůsobí obrázek šířce a výšce obrazovky */
-            background-position: center; /* Vycentrování obrázku */
-            background-repeat: no-repeat; /* Bez opakování obrázku */
-            background-attachment: fixed; /* Pozadí zůstává pevné */
+            background-image: url('pozadi.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
-
-        /* Kontejner pro odpočítávání */
         #countdown {
             text-align: center;
-            background: rgba(0, 0, 0, 0.5); /* Poloprůhledné pozadí pro lepší čitelnost */
+            background: rgba(0, 0, 0, 0.5);
             padding: 20px;
             border-radius: 10px;
         }
-
-        /* Styl pro čas a popisky */
         .time {
             font-size: 2em;
         }
         .label {
             font-size: 0.8em;
         }
-
-        /* Responzivní úpravy pro menší obrazovky */
-        @media (max-width: 600px) {
-            .time {
-                font-size: 1.5em; /* Zmenší text na mobilních zařízeních */
-            }
-            .label {
-                font-size: 0.7em;
-            }
-        }
-
-        /* Styl pro tlačítko */
         button {
             margin-top: 20px;
             padding: 10px 20px;
@@ -60,9 +41,76 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #45a049;
+        }
+        #toggleButton, #photosButton {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: 3px solid black;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        #toggleButton {
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 0, 0, 0.7);
+        }
+        #photosButton {
+            top: 80px;
+            right: 10px;
+            background-color: rgba(0, 0, 255, 0.7);
+        }
+        #infoBox {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        #photoWindow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            text-align: center;
+            max-width: 90vw;
+            max-height: 80vh;
+        }
+        #photoWindow img {
+            max-width: 100%;
+            max-height: 60vh;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+        .caption {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: white;
+            text-align: center;
+        }
+        #timeLabel {
+            position: absolute;
+            top: 25px;
+            right: 75px;
+            font-size: 14px;
+            color: white;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -76,44 +124,98 @@
         <div class="label">Minut</div>
         <div id="seconds" class="time">0</div>
         <div class="label">Sekund</div>
-
-        <!-- Tlačítko pro přehrání hudby -->
         <button onclick="playAudio()">▶️</button>
-
-        <!-- Audio player (skrytý) -->
         <audio id="audioPlayer" src="song.mp3" preload="auto"></audio>
+    </div>
+    <button id="toggleButton">ČAS</button>
+    <div id="timeLabel"></div>
+    <button id="photosButton">FOTKY</button>
+    <div id="infoBox"></div>
+    <div id="photoWindow">
+        <div id="photoContainer">
+            <img src="fotka1.jpg" alt="Fotka 1">
+            <div class="caption">Popis k fotce 1</div>
+        </div>
+        <button id="prevBtn" onclick="showPrevPhoto()">❮</button>
+        <button id="nextBtn" onclick="showNextPhoto()">❯</button>
     </div>
 
     <script>
-        // JavaScript pro odpočítávání
-        const countdownDate = new Date("2024-12-29T20:20:00").getTime(); // Nastav svůj cílový datum a čas
+        const targetDate1 = new Date("2025-01-17T20:00:00").getTime();
+        const targetDate2 = new Date("2025-01-01T19:00:00").getTime();
+
+        let currentPhotoIndex = 0;
+        const photos = [
+            { src: "fotka1.jpg", caption: "Prostě fotřík, pohodička, relaxíček" },
+            { src: "fotka2.jpg", caption: "Prostě povidla ❤️" },
+            { src: "fotka3.jpg", caption: "❤️" },
+            { src: "fotka4.jpg", caption: "Fitko nebo ples fotka brzy ❤️" }
+        ];
 
         function updateCountdown() {
             const now = new Date().getTime();
-            const distance = countdownDate - now;
+            const distance1 = targetDate1 - now;
 
-            // Výpočty dnů, hodin, minut a sekund
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const days = Math.floor(distance1 / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance1 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance1 % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance1 % (1000 * 60)) / 1000);
 
-            // Zobrazení výsledků v HTML
             document.getElementById("days").textContent = days;
             document.getElementById("hours").textContent = hours;
             document.getElementById("minutes").textContent = minutes;
             document.getElementById("seconds").textContent = seconds;
 
-            // Pokud odpočítávání vypršelo
-            if (distance < 0) {
+            if (distance1 < 0) {
                 document.getElementById("countdown").textContent = "❤️JSME SPOLU!❤️";
             }
         }
 
-        // Aktualizace každou sekundu
+        function calculateDifference() {
+            const now = new Date().getTime();
+            const distance2 = now - targetDate2;
+
+            const days = Math.floor(distance2 / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance2 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance2 % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance2 % (1000 * 60)) / 1000);
+
+            return { days, hours, minutes, seconds };
+        }
+
+        const toggleButton = document.getElementById("toggleButton");
+        const infoBox = document.getElementById("infoBox");
+        toggleButton.addEventListener("click", () => {
+            const difference = calculateDifference();
+            infoBox.textContent = `Od posledního rande uplynulo: ${difference.days} dní, ${difference.hours} hodin, ${difference.minutes} minut, ${difference.seconds} sekund.`;
+            infoBox.style.display = infoBox.style.display === "none" ? "block" : "none";
+        });
+
+        const photosButton = document.getElementById("photosButton");
+        const photoWindow = document.getElementById("photoWindow");
+        photosButton.addEventListener("click", () => {
+            photoWindow.style.display = photoWindow.style.display === "none" ? "block" : "none";
+            showPhoto(currentPhotoIndex);
+        });
+
+        function showPhoto(index) {
+            const photoContainer = document.getElementById("photoContainer");
+            photoContainer.innerHTML = `<img src="${photos[index].src}" alt="Fotka ${index + 1}">
+                                        <div class="caption">${photos[index].caption}</div>`;
+        }
+
+        function showPrevPhoto() {
+            currentPhotoIndex = (currentPhotoIndex === 0) ? photos.length - 1 : currentPhotoIndex - 1;
+            showPhoto(currentPhotoIndex);
+        }
+
+        function showNextPhoto() {
+            currentPhotoIndex = (currentPhotoIndex === photos.length - 1) ? 0 : currentPhotoIndex + 1;
+            showPhoto(currentPhotoIndex);
+        }
+
         setInterval(updateCountdown, 1000);
 
-        // Funkce pro přehrání audia po kliknutí na tlačítko
         function playAudio() {
             const audio = document.getElementById("audioPlayer");
             if (audio) {
