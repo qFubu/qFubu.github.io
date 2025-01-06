@@ -124,8 +124,8 @@
         <div class="label">Minut</div>
         <div id="seconds" class="time">0</div>
         <div class="label">Sekund</div>
-        <button onclick="playAudio()">▶️</button>
-        <audio id="audioPlayer" src="song.mp3" preload="auto"></audio>
+        <button onclick="selectSong()">▶️</button>
+        <audio id="audioPlayer" preload="auto"></audio>
     </div>
     <button id="toggleButton">ČAS</button>
     <div id="timeLabel"></div>
@@ -141,15 +141,15 @@
     </div>
 
     <script>
-        const targetDate1 = new Date("2025-01-17T16:00:00").getTime();
+        const targetDate1 = new Date("2025-01-17T20:00:00").getTime();
         const targetDate2 = new Date("2025-01-01T19:00:00").getTime();
 
         let currentPhotoIndex = 0;
         const photos = [
-            { src: "fotka1.jpg", caption: "Prostě fotřík, pohodička, relaxíček" },
-            { src: "fotka2.jpg", caption: "Prostě povidla ❤️" },
-            { src: "fotka3.jpg", caption: "❤️" },
-            { src: "fotka4.jpg", caption: "Fitko nebo ples fotka brzy ❤️" }
+            { src: "fotka1.jpg", caption: "Popis k fotce 1" },
+            { src: "fotka2.jpg", caption: "Popis k fotce 2" },
+            { src: "fotka3.jpg", caption: "Popis k fotce 3" },
+            { src: "fotka4.jpg", caption: "Popis k fotce 4" }
         ];
 
         function updateCountdown() {
@@ -216,12 +216,24 @@
 
         setInterval(updateCountdown, 1000);
 
-        function playAudio() {
-            const audio = document.getElementById("audioPlayer");
-            if (audio) {
+        function selectSong() {
+            const songs = ["song.mp3", "song2.mp3", "song3.mp3"];
+            const songNames = ["Náš Lalaland", "Bubble tea - rychlá (fitko)", "Bubble tea - pomalá"];
+            
+            let songList = "Vyberte skladbu:\n";
+            songs.forEach((song, index) => {
+                songList += `${index + 1}: ${songNames[index]}\n`;
+            });
+            const choice = parseInt(prompt(songList)) - 1;
+            
+            if (choice >= 0 && choice < songs.length) {
+                const audio = document.getElementById("audioPlayer");
+                audio.src = songs[choice];
                 audio.play().catch(error => {
                     console.warn("Automatické přehrávání nebylo povoleno prohlížečem.", error);
                 });
+            } else {
+                alert("Neplatná volba. Zkuste to znovu.");
             }
         }
     </script>
